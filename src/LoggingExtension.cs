@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.Linq;
 using System.Reflection;
 using Unity.Attributes;
@@ -48,7 +47,7 @@ namespace Unity.Microsoft.Logging
         #region IBuildPlanPolicy
 
 
-        public void BuildUp(IBuilderContext context)
+        public void BuildUp<T>(ref T context) where T : IBuilderContext
         {
             context.Existing = null == context.ParentContext
                              ? LoggerFactory.CreateLogger(context.OriginalBuildKey.Name ?? string.Empty)
@@ -61,11 +60,9 @@ namespace Unity.Microsoft.Logging
 
         #region IBuildPlanCreatorPolicy
 
-        IBuildPlanPolicy IBuildPlanCreatorPolicy.CreatePlan(IBuilderContext context, INamedType buildKey)
+        IBuildPlanPolicy IBuildPlanCreatorPolicy.CreatePlan<T>(ref T context, INamedType buildKey)
         {
-            var info = (context ?? throw new ArgumentNullException(nameof(context))).BuildKey
-                                                                                    .Type
-                                                                                    .GetTypeInfo();
+            var info = context.BuildKey.Type.GetTypeInfo();
             if (!info.IsGenericType) return this;
 
             var buildMethod = _createLoggerMethod.MakeGenericMethod(info.GenericTypeArguments.First())
@@ -115,7 +112,7 @@ namespace Unity.Microsoft.Logging
             /// 
             /// </summary>
             /// <param name="context"></param>
-            public void BuildUp(IBuilderContext context)
+            public void BuildUp<T>(ref T context) where T : IBuilderContext
             {
                 _buildMethod(context, _loggerFactory);
             }
