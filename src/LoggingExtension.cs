@@ -5,6 +5,7 @@ using Unity.Attributes;
 using Unity.Builder;
 using Unity.Extension;
 using Unity.Policy;
+using Unity.Storage;
 
 namespace Unity.Microsoft.Logging
 {
