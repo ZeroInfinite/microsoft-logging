@@ -47,7 +47,7 @@ namespace Unity.Microsoft.Logging
         #region IBuildPlanPolicy
 
 
-        public void BuildUp<T>(ref T context) where T : IBuilderContext
+        public void BuildUp<TContext>(ref TContext context) where TContext : IBuilderContext
         {
             context.Existing = null == context.ParentContext
                              ? LoggerFactory.CreateLogger(context.OriginalBuildKey.Name ?? string.Empty)
@@ -112,7 +112,7 @@ namespace Unity.Microsoft.Logging
             /// 
             /// </summary>
             /// <param name="context"></param>
-            public void BuildUp<T>(ref T context) where T : IBuilderContext
+            public void BuildUp<TContext>(ref TContext context) where TContext : IBuilderContext
             {
                 _buildMethod(context, _loggerFactory);
             }
