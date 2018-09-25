@@ -8,9 +8,7 @@ using Unity.Policy;
 
 namespace Unity.Microsoft.Logging
 {
-    public class LoggingExtension : UnityContainerExtension,
-                                    IBuildPlanCreatorPolicy,
-                                    IBuildPlanPolicy
+    public class LoggingExtension : UnityContainerExtension
     {
         #region Fields
 
@@ -60,16 +58,16 @@ namespace Unity.Microsoft.Logging
 
         #region IBuildPlanCreatorPolicy
 
-        IBuildPlanPolicy IBuildPlanCreatorPolicy.CreatePlan<T>(ref T context, INamedType buildKey)
-        {
-            var info = context.BuildKey.Type.GetTypeInfo();
-            if (!info.IsGenericType) return this;
+        //IBuildPlanPolicy IBuildPlanCreatorPolicy.CreatePlan<T>(ref T context, INamedType buildKey)
+        //{
+        //    var info = context.BuildKey.Type.GetTypeInfo();
+        //    if (!info.IsGenericType) return this;
 
-            var buildMethod = _createLoggerMethod.MakeGenericMethod(info.GenericTypeArguments.First())
-                                                 .CreateDelegate(typeof(DynamicBuildPlanMethod));
+        //    var buildMethod = _createLoggerMethod.MakeGenericMethod(info.GenericTypeArguments.First())
+        //                                         .CreateDelegate(typeof(DynamicBuildPlanMethod));
 
-            return new DynamicMethodBuildPlan((DynamicBuildPlanMethod)buildMethod, LoggerFactory);
-        }
+        //    return new DynamicMethodBuildPlan((DynamicBuildPlanMethod)buildMethod, LoggerFactory);
+        //}
 
         #endregion
 
@@ -84,14 +82,14 @@ namespace Unity.Microsoft.Logging
 
         protected override void Initialize()
         {
-            Context.Policies.Set(typeof(ILogger),   string.Empty, typeof(IBuildPlanPolicy),        this);
-            Context.Policies.Set(typeof(ILogger),   string.Empty, typeof(IBuildPlanCreatorPolicy), this);
-            Context.Policies.Set(typeof(ILogger<>), string.Empty, typeof(IBuildPlanCreatorPolicy), this);
+            // TODO: Context.Policies.Set(typeof(ILogger),   string.Empty, typeof(IBuildPlanPolicy),        this);
+            // TODO: Context.Policies.Set(typeof(ILogger),   string.Empty, typeof(IBuildPlanCreatorPolicy), this);
+            // TODO: Context.Policies.Set(typeof(ILogger<>), string.Empty, typeof(IBuildPlanCreatorPolicy), this);
         }
 
         private delegate void DynamicBuildPlanMethod(IBuilderContext context, ILoggerFactory loggerFactory);
 
-        private class DynamicMethodBuildPlan : IBuildPlanPolicy
+        private class DynamicMethodBuildPlan
         {
             private readonly DynamicBuildPlanMethod _buildMethod;
             private readonly ILoggerFactory _loggerFactory;
